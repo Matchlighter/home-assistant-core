@@ -4,7 +4,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import timedelta
 import logging
-from typing import Any, final
 
 import voluptuous as vol
 
@@ -32,15 +31,7 @@ SCAN_INTERVAL = timedelta(seconds=30)
 
 ENTITY_ID_FORMAT = DOMAIN + ".{}"
 
-ATTR_TODAY_ENERGY_KWH = "today_energy_kwh"
-ATTR_CURRENT_POWER_W = "current_power_w"
-
 MIN_TIME_BETWEEN_SCANS = timedelta(seconds=10)
-
-PROP_TO_ATTR = {
-    "current_power_w": ATTR_CURRENT_POWER_W,
-    "today_energy_kwh": ATTR_TODAY_ENERGY_KWH,
-}
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -129,15 +120,3 @@ class SwitchEntity(ToggleEntity):
     def today_energy_kwh(self) -> float | None:
         """Return the today total energy usage in kWh."""
         return self._attr_today_energy_kwh
-
-    @final
-    @property
-    def state_attributes(self) -> dict[str, Any] | None:
-        """Return the optional state attributes."""
-        data = {}
-
-        for prop, attr in PROP_TO_ATTR.items():
-            if (value := getattr(self, prop)) is not None:
-                data[attr] = value
-
-        return data
