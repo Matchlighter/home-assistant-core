@@ -173,6 +173,26 @@ def remove_trigger_discovery_data(
     get_mqtt_data(hass).debug_info_triggers.pop(discovery_hash)
 
 
+def add_action_discovery_data(hass, discovery_hash, discovery_data, device_id):
+    """Add discovery data."""
+    debug_info = hass.data[DATA_MQTT_DEBUG_INFO]
+    debug_info["actions"][discovery_hash] = {
+        "device_id": device_id,
+        "discovery_data": discovery_data,
+    }
+
+
+def update_action_discovery_data(hass, discovery_hash, discovery_payload):
+    """Update discovery data."""
+    action_info = hass.data[DATA_MQTT_DEBUG_INFO]["actions"][discovery_hash]
+    action_info["discovery_data"][ATTR_DISCOVERY_PAYLOAD] = discovery_payload
+
+
+def remove_action_discovery_data(hass, discovery_hash):
+    """Remove discovery data."""
+    hass.data[DATA_MQTT_DEBUG_INFO]["actions"].pop(discovery_hash)
+
+
 def _info_for_entity(hass: HomeAssistant, entity_id: str) -> dict[str, Any]:
     entity_info = get_mqtt_data(hass).debug_info_entities[entity_id]
     subscriptions = [

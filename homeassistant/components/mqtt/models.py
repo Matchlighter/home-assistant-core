@@ -25,6 +25,8 @@ if TYPE_CHECKING:
 
     from .client import MQTT, Subscription
     from .debug_info import TimestampedPublishMessage
+
+    from .device_action import MqttDeviceAction
     from .device_trigger import Trigger
     from .discovery import MQTTDiscoveryPayload
     from .tag import MQTTTagScanner
@@ -319,6 +321,7 @@ class MqttData:
         default_factory=dict
     )
     device_triggers: dict[str, Trigger] = field(default_factory=dict)
+    device_actions: dict[str, MqttDeviceAction] = field(default_factory=dict)
     data_config_flow_lock: asyncio.Lock = field(default_factory=asyncio.Lock)
     discovery_already_discovered: set[tuple[str, str]] = field(default_factory=set)
     discovery_pending_discovered: dict[tuple[str, str], PendingDiscovered] = field(

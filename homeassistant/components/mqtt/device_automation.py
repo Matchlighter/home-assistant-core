@@ -10,12 +10,14 @@ from homeassistant.core import HomeAssistant
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 
+from . import device_action
 from . import device_trigger
 from .config import MQTT_BASE_SCHEMA
 from .mixins import async_setup_entry_helper
 
+AUTOMATION_TYPE_ACTION = "action"
 AUTOMATION_TYPE_TRIGGER = "trigger"
-AUTOMATION_TYPES = [AUTOMATION_TYPE_TRIGGER]
+AUTOMATION_TYPES = [AUTOMATION_TYPE_ACTION, AUTOMATION_TYPE_TRIGGER]
 AUTOMATION_TYPES_SCHEMA = vol.In(AUTOMATION_TYPES)
 CONF_AUTOMATION_TYPE = "automation_type"
 
@@ -39,7 +41,11 @@ async def _async_setup_automation(
     discovery_data: DiscoveryInfoType,
 ) -> None:
     """Set up an MQTT device automation."""
-    if config[CONF_AUTOMATION_TYPE] == AUTOMATION_TYPE_TRIGGER:
+    if config[CONF_AUTOMATION_TYPE] == AUTOMATION_TYPE_ACTION:
+        await device_action.async_setup_action(
+            hass, config, config_entry, discovery_data
+        )
+    elif config[CONF_AUTOMATION_TYPE] == AUTOMATION_TYPE_TRIGGER:
         await device_trigger.async_setup_trigger(
             hass, config, config_entry, discovery_data
         )
@@ -48,3 +54,4 @@ async def _async_setup_automation(
 async def async_removed_from_device(hass: HomeAssistant, device_id: str) -> None:
     """Handle Mqtt removed from a device."""
     await device_trigger.async_removed_from_device(hass, device_id)
+    await device_action.async_removed_from_device(hass, device_id)
